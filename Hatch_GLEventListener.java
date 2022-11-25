@@ -6,6 +6,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import com.jogamp.opengl.util.texture.*;
   
 public class Hatch_GLEventListener implements GLEventListener {
   
@@ -144,19 +145,21 @@ public class Hatch_GLEventListener implements GLEventListener {
   
   private void initialise(GL3 gl) {
     createRandomNumbers();
-    int[] textureId0 = TextureLibrary.loadTexture(gl, "textures/chequerboard.jpg");
-    int[] textureId1 = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
-    int[] textureId2 = TextureLibrary.loadTexture(gl, "textures/jade_specular.jpg");
-    int[] textureId3 = TextureLibrary.loadTexture(gl, "textures/container2.jpg");
-    int[] textureId4 = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
-    int[] textureId5 = TextureLibrary.loadTexture(gl, "textures/wattBook.jpg");
-    int[] textureId6 = TextureLibrary.loadTexture(gl, "textures/wattBook_specular.jpg");
+    Texture textureId0 = TextureLibrary.loadTexture(gl, "textures/chequerboard.jpg");
+    Texture textureId1 = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
+    Texture textureId2 = TextureLibrary.loadTexture(gl, "textures/jade_specular.jpg");
+    Texture textureId3 = TextureLibrary.loadTexture(gl, "textures/container2.jpg");
+    Texture textureId4 = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
+    Texture textureId5 = TextureLibrary.loadTexture(gl, "textures/wattBook.jpg");
+    Texture textureId6 = TextureLibrary.loadTexture(gl, "textures/wattBook_specular.jpg");
+    Texture textureId7 = TextureLibrary.loadTexture(gl, "textures/window.png");
+
     
         
     light = new Light(gl);
     light.setCamera(camera);
     
-    Room room = new Room(gl, camera, light, textureId1, textureId0);
+    Room room = new Room(gl, camera, light, textureId1, textureId0, textureId7);
     roomRoot = room.get_scene_graph();
 
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
@@ -185,7 +188,7 @@ public class Hatch_GLEventListener implements GLEventListener {
     float legScale = 0.67f;
     
     robotRoot = new NameNode("root");
-    robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,0));
+    robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,-16));
     
     TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
     

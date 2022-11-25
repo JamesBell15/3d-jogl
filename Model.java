@@ -2,19 +2,20 @@ import gmaths.*;
 import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
+import com.jogamp.opengl.util.texture.*;
 
 public class Model {
   
   private Mesh mesh;
-  private int[] textureId1; 
-  private int[] textureId2; 
+  private Texture textureId1;
+  private Texture textureId2;
   private Material material;
   private Shader shader;
   private Mat4 modelMatrix;
   private Camera camera;
   private Light light;
   
-  public Model(GL3 gl, Camera camera, Light light, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, int[] textureId1, int[] textureId2) {
+  public Model(GL3 gl, Camera camera, Light light, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, Texture textureId1, Texture textureId2) {
     this.mesh = mesh;
     this.material = material;
     this.modelMatrix = modelMatrix;
@@ -25,7 +26,7 @@ public class Model {
     this.textureId2 = textureId2;
   }
   
-  public Model(GL3 gl, Camera camera, Light light, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, int[] textureId1) {
+  public Model(GL3 gl, Camera camera, Light light, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, Texture textureId1) {
     this(gl, camera, light, shader, material, modelMatrix, mesh, textureId1, null);
   }
   
@@ -46,6 +47,8 @@ public class Model {
   }
 
   public void render(GL3 gl, Mat4 modelMatrix) {
+    // gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+    // dont use will break everything
     Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), modelMatrix));
     shader.use(gl);
     shader.setFloatArray(gl, "model", modelMatrix.toFloatArrayForGLSL());
@@ -66,12 +69,12 @@ public class Model {
     if (textureId1!=null) {
       shader.setInt(gl, "first_texture", 0);  // be careful to match these with GL_TEXTURE0 and GL_TEXTURE1
       gl.glActiveTexture(GL.GL_TEXTURE0);
-      gl.glBindTexture(GL.GL_TEXTURE_2D, textureId1[0]);
+      textureId1.bind(gl);
     }
     if (textureId2!=null) {
       shader.setInt(gl, "second_texture", 1);
       gl.glActiveTexture(GL.GL_TEXTURE1);
-      gl.glBindTexture(GL.GL_TEXTURE_2D, textureId2[0]);
+      textureId2.bind(gl);
     }
     mesh.render(gl);
   } 
@@ -82,8 +85,8 @@ public class Model {
   
   public void dispose(GL3 gl) {
     mesh.dispose(gl);
-    if (textureId1!=null) gl.glDeleteBuffers(1, textureId1, 0);
-    if (textureId2!=null) gl.glDeleteBuffers(1, textureId2, 0);
+    if (textureId1!=null) textureId1.destroy(gl);
+    if (textureId2!=null) textureId2.destroy(gl);
   }
   
 }

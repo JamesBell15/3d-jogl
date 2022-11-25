@@ -6,26 +6,30 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import com.jogamp.opengl.util.texture.*;
 
 public class Room {
 
   private GL3 gl;
   private Camera camera;
   private Light light;
-  private int[] wallTextureId;
-  private int[] floorTextureId;
+  private Texture wallTextureId;
+  private Texture floorTextureId;
+  private Texture windowTextureId;
 
   public Room(GL3 gl,
               Camera camera,
               Light light,
-              int[] wallTextureId,
-              int[] floorTextureId
+              Texture wallTextureId,
+              Texture floorTextureId,
+              Texture windowTextureId
             ){
     this.gl = gl;
     this.camera = camera;
     this.light = light;
     this.wallTextureId = wallTextureId;
     this.floorTextureId = floorTextureId;
+    this.windowTextureId = windowTextureId;
   }
 
   private SGNode root;
@@ -98,6 +102,8 @@ public class Room {
     ModelNode wallShape1 = new ModelNode("Two Triangles(Wall 1)", twoTriangles);
 
     // Window
+    shader = new Shader(gl, "vs_tt.txt", "fs_tt_transparent.txt");
+    twoTriangles = new Model(gl, camera, light, shader, material, modelMatrix, mesh, windowTextureId);
     NameNode roomWindow = new NameNode("window");
     transform = new Vec3(0f, 0.5f, -0.5f);
     windowTransform = new TransformNode("Transform Window", Mat4Transform.translate(transform));
