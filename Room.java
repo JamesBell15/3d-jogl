@@ -8,31 +8,29 @@ import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
 
-public class Room {
+public class Room extends Scene {
 
-  private GL3 gl;
-  private Camera camera;
-  private Light light;
   private Texture wallTextureId;
   private Texture floorTextureId;
   private Texture windowTextureId;
 
   public Room(GL3 gl,
               Camera camera,
-              Light light,
+              Light[] lights,
+              DirectionLight[] directionLights,
               Texture wallTextureId,
               Texture floorTextureId,
               Texture windowTextureId
             ){
-    this.gl = gl;
-    this.camera = camera;
-    this.light = light;
+    super(gl,
+          camera,
+          lights,
+          directionLights);
     this.wallTextureId = wallTextureId;
     this.floorTextureId = floorTextureId;
     this.windowTextureId = windowTextureId;
   }
 
-  private SGNode root;
   private Model twoTriangles;
   // room nodes
   // floor
@@ -45,7 +43,7 @@ public class Room {
 
   public SGNode get_scene_graph(){
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-    Shader shader = new Shader(gl, "vs_tt.txt", "fs_tt_texture.txt");
+    Shader shader = new Shader(gl, "vs_tt.txt", "fs_multi_light.txt");
     Material material = new Material(
                                       new Vec3(0.0f, 0.5f, 0.81f),
                                       new Vec3(0.0f, 0.5f, 0.81f),
@@ -61,7 +59,7 @@ public class Room {
     roomScale = new TransformNode("Scale Room", Mat4Transform.scale(scale));
 
     // Floor
-    twoTriangles = new Model(gl, camera, light, shader, material, modelMatrix, mesh, floorTextureId);
+    twoTriangles = new Model(gl, camera, lights, directionLights, shader, material, modelMatrix, mesh, floorTextureId);
 
     NameNode roomFloor = new NameNode("floor");
     Vec3 transform = new Vec3(0f, 0f, 0f);
@@ -73,7 +71,7 @@ public class Room {
     ModelNode floorShape = new ModelNode("Two Triangles(floor)", twoTriangles);
 
     // Walls
-    twoTriangles = new Model(gl, camera, light, shader, material, modelMatrix, mesh, wallTextureId);
+    twoTriangles = new Model(gl, camera, lights, directionLights, shader, material, modelMatrix, mesh, wallTextureId);
 
     // Wall 0
     NameNode roomWall0 = new NameNode("wall 0");
@@ -102,8 +100,8 @@ public class Room {
     ModelNode wallShape1 = new ModelNode("Two Triangles(Wall 1)", twoTriangles);
 
     // Window
-    shader = new Shader(gl, "vs_tt.txt", "fs_tt_transparent.txt");
-    twoTriangles = new Model(gl, camera, light, shader, material, modelMatrix, mesh, windowTextureId);
+    shader = new Shader(gl, "vs_tt.txt", "fs_multi_light.txt");
+    twoTriangles = new Model(gl, camera, lights, directionLights, shader, material, modelMatrix, mesh, windowTextureId);
     NameNode roomWindow = new NameNode("window");
     transform = new Vec3(0f, 0.5f, -0.5f);
     windowTransform = new TransformNode("Transform Window", Mat4Transform.translate(transform));

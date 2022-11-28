@@ -13,25 +13,27 @@ public class Model {
   private Shader shader;
   private Mat4 modelMatrix;
   private Camera camera;
-  private Light light;
+  private Light[] lights;
+  private DirectionLight[] directionLights;
   
-  public Model(GL3 gl, Camera camera, Light light, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, Texture textureId1, Texture textureId2) {
+  public Model(GL3 gl, Camera camera, Light[] lights, DirectionLight[] directionLights, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, Texture textureId1, Texture textureId2) {
     this.mesh = mesh;
     this.material = material;
     this.modelMatrix = modelMatrix;
     this.shader = shader;
     this.camera = camera;
-    this.light = light;
+    this.lights = lights;
+    this.directionLights = directionLights;
     this.textureId1 = textureId1;
     this.textureId2 = textureId2;
   }
   
-  public Model(GL3 gl, Camera camera, Light light, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, Texture textureId1) {
-    this(gl, camera, light, shader, material, modelMatrix, mesh, textureId1, null);
+  public Model(GL3 gl, Camera camera, Light[] lights, DirectionLight[] directionLights, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, Texture textureId1) {
+    this(gl, camera, lights, directionLights, shader, material, modelMatrix, mesh, textureId1, null);
   }
   
-  public Model(GL3 gl, Camera camera, Light light, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh) {
-    this(gl, camera, light, shader, material, modelMatrix, mesh, null, null);
+  public Model(GL3 gl, Camera camera, Light[] lights, DirectionLight[] directionLights, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh) {
+    this(gl, camera, lights, directionLights, shader, material, modelMatrix, mesh, null, null);
   }
   
   public void setModelMatrix(Mat4 m) {
@@ -42,8 +44,12 @@ public class Model {
     this.camera = camera;
   }
   
-  public void setLight(Light light) {
-    this.light = light;
+  public void setLights(Light[] lights) {
+    this.lights = lights;
+  }
+
+  public void setDirectionLights(DirectionLight[] directionLights) {
+    this.directionLights = directionLights;
   }
 
   public void render(GL3 gl, Mat4 modelMatrix) {
@@ -56,10 +62,22 @@ public class Model {
     
     shader.setVec3(gl, "viewPos", camera.getPosition());
 
-    shader.setVec3(gl, "light.position", light.getPosition());
-    shader.setVec3(gl, "light.ambient", light.getMaterial().getAmbient());
-    shader.setVec3(gl, "light.diffuse", light.getMaterial().getDiffuse());
-    shader.setVec3(gl, "light.specular", light.getMaterial().getSpecular());
+    // shader.setInt(gl, "numberOfLights", lights.length);
+    for (int i = 0; i < lights.length; i++) {
+      shader.setVec3(gl, String.format("lights[{0}].position", i), lights[i].getPosition());
+      shader.setVec3(gl, String.format("lights[{0}].ambient", i), lights[i].getMaterial().getAmbient());
+      shader.setVec3(gl, String.format("lights[{0}].diffuse", i), lights[i].getMaterial().getDiffuse());
+      shader.setVec3(gl, String.format("lights[{0}].specular", i), lights[i].getMaterial().getSpecular());
+    }
+
+    // shader.setInt(gl, "numberOfDirLights", directionLights.length);
+    for (int i = 0; i < directionLights.length; i++) {
+      shader.setVec3(gl, String.format("directionLights[{0}].position", i), directionLights[i].getPosition());
+      shader.setVec3(gl, String.format("directionLights[{0}].ambient", i), directionLights[i].getMaterial().getAmbient());
+      shader.setVec3(gl, String.format("directionLights[{0}].diffuse", i), directionLights[i].getMaterial().getDiffuse());
+      shader.setVec3(gl, String.format("directionLights[{0}].specular", i), directionLights[i].getMaterial().getSpecular());
+      shader.setVec3(gl, String.format("directionLights[{0}].direction", i), directionLights[i].getDirection());
+    }
 
     shader.setVec3(gl, "material.ambient", material.getAmbient());
     shader.setVec3(gl, "material.diffuse", material.getDiffuse());
@@ -71,11 +89,11 @@ public class Model {
       gl.glActiveTexture(GL.GL_TEXTURE0);
       textureId1.bind(gl);
     }
-    if (textureId2!=null) {
-      shader.setInt(gl, "second_texture", 1);
-      gl.glActiveTexture(GL.GL_TEXTURE1);
-      textureId2.bind(gl);
-    }
+    // if (textureId2!=null) {
+    //   shader.setInt(gl, "second_texture", 1);
+    //   gl.glActiveTexture(GL.GL_TEXTURE1);
+    //   textureId2.bind(gl);
+    // }
     mesh.render(gl);
   } 
   

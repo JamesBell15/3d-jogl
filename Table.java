@@ -8,25 +8,23 @@ import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
 
-public class Table {
+public class Table extends Scene {
 
-  private GL3 gl;
-  private Camera camera;
-  private Light light;
   private Texture tableTextureId;
 
   public Table(GL3 gl,
               Camera camera,
-              Light light,
+              Light[] lights,
+              DirectionLight[] directionLights,
               Texture tableTextureId
             ){
-    this.gl = gl;
-    this.camera = camera;
-    this.light = light;
+    super(gl,
+          camera,
+          lights,
+          directionLights);
     this.tableTextureId = tableTextureId;
   }
 
-  private SGNode root;
   private Model cube;
 
   private NameNode surface, legs;
@@ -40,11 +38,9 @@ public class Table {
   private ModelNode surfaceShape;
   private ModelNode[] legShapes = new ModelNode[4];
 
-
-
   public SGNode get_scene_graph(){
     Mesh mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
-    Shader shader = new Shader(gl, "vs_cube.txt", "fs_cube.txt");
+    Shader shader = new Shader(gl, "vs_cube.txt", "fs_multi_light.txt");
     Material material = new Material(
                                       new Vec3(0.0f, 0.5f, 0.81f),
                                       new Vec3(0.0f, 0.5f, 0.81f),
@@ -52,7 +48,7 @@ public class Table {
                                       32.0f
                                     );
     Mat4 modelMatrix = Mat4Transform.scale(1f, 1f, 1f);
-    cube = new Model(gl, camera, light, shader, material, modelMatrix, mesh, tableTextureId);
+    cube = new Model(gl, camera, lights, directionLights, shader, material, modelMatrix, mesh, tableTextureId);
 
     root = new NameNode("root");
 
