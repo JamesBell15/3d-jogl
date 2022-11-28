@@ -33,6 +33,8 @@ public class Hatch_GLEventListener implements GLEventListener {
     gl.glFrontFace(GL.GL_CCW);    // default is 'CCW'
     gl.glEnable(GL.GL_CULL_FACE); // default is 'not enabled'
     gl.glCullFace(GL.GL_BACK);   // default is 'back', assuming CCW
+    gl.glEnable(GL.GL_BLEND);
+    gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
     initialise(gl);
     startTime = getSeconds();
   }
@@ -125,7 +127,7 @@ public class Hatch_GLEventListener implements GLEventListener {
   private Mat4 perspective, modelMatrix;
   private Model floor, sphere, cube, cube2, twoTriangles;
   private Light light;
-  private SGNode robotRoot, roomRoot;
+  private SGNode robotRoot, roomRoot, tableRoot;
   
   private Mesh mesh;
   private Shader shader;
@@ -145,6 +147,7 @@ public class Hatch_GLEventListener implements GLEventListener {
   
   private void initialise(GL3 gl) {
     createRandomNumbers();
+
     Texture textureId0 = TextureLibrary.loadTexture(gl, "textures/chequerboard.jpg");
     Texture textureId1 = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
     Texture textureId2 = TextureLibrary.loadTexture(gl, "textures/jade_specular.jpg");
@@ -153,8 +156,6 @@ public class Hatch_GLEventListener implements GLEventListener {
     Texture textureId5 = TextureLibrary.loadTexture(gl, "textures/wattBook.jpg");
     Texture textureId6 = TextureLibrary.loadTexture(gl, "textures/wattBook_specular.jpg");
     Texture textureId7 = TextureLibrary.loadTexture(gl, "textures/window.png");
-
-    
         
     light = new Light(gl);
     light.setCamera(camera);
@@ -162,14 +163,17 @@ public class Hatch_GLEventListener implements GLEventListener {
     Room room = new Room(gl, camera, light, textureId1, textureId0, textureId7);
     roomRoot = room.get_scene_graph();
 
+    Table table = new Table(gl, camera, light, textureId5);
+    tableRoot = table.get_scene_graph();
+
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
-    shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
+    shader = new Shader(gl, "vs_cube.txt", "fs_cube.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
     sphere = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId1, textureId2);
     
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
-    shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
+    shader = new Shader(gl, "vs_cube.txt", "fs_cube.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
     cube = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId3, textureId4);
@@ -278,9 +282,12 @@ public class Hatch_GLEventListener implements GLEventListener {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
     light.setPosition(getLightPosition());  // changing light position each frame
     light.render(gl);
-    roomRoot.draw(gl);
     if (animation) updateLeftArm();
     robotRoot.draw(gl);
+    tableRoot.draw(gl);
+
+    // order matters draw transparent last
+    roomRoot.draw(gl);
   }
 
   private void updateLeftArm() {
