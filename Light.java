@@ -10,7 +10,11 @@ public class Light {
   private Mat4 model;
   private Shader shader;
   private Camera camera;
-    
+  private float constant = 1f;
+  private float linear = 0.8f;
+  private float quadratic = 0.032f;
+
+
   public Light(GL3 gl) {
     material = new Material();
     material.setAmbient(0.5f, 0.5f, 0.5f);
@@ -21,29 +25,41 @@ public class Light {
     shader = new Shader(gl, "vs_light_01.txt", "fs_light_01.txt");
     fillBuffers(gl);
   }
-  
+
   public void setPosition(Vec3 v) {
     position.x = v.x;
     position.y = v.y;
     position.z = v.z;
   }
-  
+
   public void setPosition(float x, float y, float z) {
     position.x = x;
     position.y = y;
     position.z = z;
   }
-  
+
   public Vec3 getPosition() {
     return position;
   }
-  
+
   public void setMaterial(Material m) {
     material = m;
   }
-  
+
   public Material getMaterial() {
     return material;
+  }
+
+  public float getConstant() {
+    return constant;
+  }
+
+  public float getLinear() {
+    return linear;
+  }
+
+  public float getQuadratic() {
+    return quadratic;
   }
   
   public void setCamera(Camera camera) {
