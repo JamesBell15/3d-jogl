@@ -56,7 +56,10 @@ public class Hatch_GLEventListener implements GLEventListener {
   /* Clean up memory, if necessary */
   public void dispose(GLAutoDrawable drawable) {
     GL3 gl = drawable.getGL().getGL3();
-    light.dispose(gl);
+    lights[0].dispose(gl);
+    lights[1].dispose(gl);
+    spotLights[0].dispose(gl);
+    spotLights[1].dispose(gl);
     floor.dispose(gl);
     sphere.dispose(gl);
     cube.dispose(gl);
@@ -126,7 +129,9 @@ public class Hatch_GLEventListener implements GLEventListener {
   private Camera camera;
   private Mat4 perspective, modelMatrix;
   private Model floor, sphere, cube, cube2, twoTriangles;
-  private Light light;
+  private GlobalLight[] globalLights = new GlobalLight[Constants.NUMBER_OF_GLOBAL_LIGHTS];
+  private Light[] lights = new Light[Constants.NUMBER_OF_POINT_LIGHTS];
+  private SpotLight[] spotLights = new SpotLight[Constants.NUMBER_OF_SPOT_LIGHTS];
   private SGNode robotRoot, roomRoot, tableRoot;
   
   private Mesh mesh;
@@ -135,15 +140,6 @@ public class Hatch_GLEventListener implements GLEventListener {
 
   private float xPosition = 0;
   private TransformNode translateX, robotMoveTranslate, leftArmRotate, rightArmRotate;
-
-  // room nodes
-  // floor
-  private TransformNode roomScale, floorTransform, floorScale;
-  // wall
-  private TransformNode wallTransform0, wallRotate0, wallScale0;
-  private TransformNode wallTransform1, wallRotate1, wallScale1;
-  // window
-  private TransformNode windowTransform, windowRotate, windowScale;
   
   private void initialise(GL3 gl) {
     createRandomNumbers();
@@ -157,28 +153,81 @@ public class Hatch_GLEventListener implements GLEventListener {
     Texture textureId6 = TextureLibrary.loadTexture(gl, "textures/wattBook_specular.jpg");
     Texture textureId7 = TextureLibrary.loadTexture(gl, "textures/window.png");
         
-    light = new Light(gl);
-    light.setCamera(camera);
+
+    // globalLights[0] = new GlobalLight(
+    //   new Vec3(1f,0f,0f),
+    //   new Vec3(0f, 0f, 0f),
+    //   new Vec3(0f, 0f, 0f),
+    //   new Vec3(0f, 0f, 0f)
+    // );
+    // globalLights[1] = new GlobalLight(
+    //   new Vec3(0f,0f,1f),
+    //   new Vec3(0f, 0f, 0f),
+    //   new Vec3(0f, 0f, 0f),
+    //   new Vec3(0f, 0f, 0f)
+    // );
+    globalLights[0] = new GlobalLight(
+      new Vec3(1f,0f,0f),
+      new Vec3(0.5f, 0f, 0.5f),
+      new Vec3(0.5f, 0f, 0.5f),
+      new Vec3(0.5f, 0f, 0.5f)
+    );
+    globalLights[1] = new GlobalLight(
+      new Vec3(0f,0f,1f),
+      new Vec3(0f, 0.5f, 0f),
+      new Vec3(0f, 0.5f, 0f),
+      new Vec3(0f, 0.5f, 0f)
+    );
+
+    lights[0] = new Light(gl);
+    lights[0].setCamera(camera);
     
-    Room room = new Room(gl, camera, light, textureId1, textureId0, textureId7);
+    lights[1] = new Light(gl);
+    lights[1].setPosition(5f, 1f, 1f);
+    lights[1].setCamera(camera);
+
+
+    Material material = new Material(new Vec3(0f, 0f, 0f), new Vec3(0f, 0f, 0f), new Vec3(0f, 0f, 0f), 0f);
+
+    lights[0].setMaterial(material);
+    lights[1].setMaterial(material);
+
+    material = new Material(new Vec3(0f, 1f, 0f), new Vec3(0f, 1f, 0f), new Vec3(0f, 1f, 0f), 32f);
+
+    float cutOff = (float) Math.cos(5.0*Math.PI/180.0);
+    float outerCutOff = (float) Math.cos(35.0*Math.PI/180.0);
+
+    spotLights[0] = new SpotLight(gl, new Vec3(1f, 1f, 0f), cutOff, outerCutOff);
+    spotLights[0].setMaterial(material);
+    spotLights[0].setPosition(2f, 1f, -16f);
+    spotLights[0].setCamera(camera);
+
+    material = new Material(new Vec3(1f, 0f, 1f), new Vec3(1f, 0f, 1f), new Vec3(1f, 0f, 1f), 2000f);
+
+    spotLights[1] = new SpotLight(gl, new Vec3(0f, -1f, 0f), cutOff, outerCutOff);
+    spotLights[1].setMaterial(material);
+    spotLights[1].setPosition(1f, 5f, 1f);
+    spotLights[1].setCamera(camera);
+
+    Room room = new Room(gl, camera, lights, globalLights, spotLights, textureId1, textureId0, textureId7);
     roomRoot = room.get_scene_graph();
 
-    Table table = new Table(gl, camera, light, textureId5);
+    Table table = new Table(gl, camera, lights, globalLights, spotLights, textureId5);
     tableRoot = table.get_scene_graph();
 
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
-    shader = new Shader(gl, "vs_cube.txt", "fs_cube.txt");
+    shader = new Shader(gl, "vs_cube.txt", "fs_spotlight.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-    sphere = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId1, textureId2);
+    sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureId1, textureId2);
     
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
-    shader = new Shader(gl, "vs_cube.txt", "fs_cube.txt");
+    shader = new Shader(gl, "vs_cube.txt", "fs_spotlight.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-    cube = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId3, textureId4);
+    cube = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureId3, textureId4);
     
-    cube2 = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId5, textureId6); 
+    cube2 = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureId5, textureId6);
     
     // robot
     
@@ -280,8 +329,12 @@ public class Hatch_GLEventListener implements GLEventListener {
  
   private void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-    light.setPosition(getLightPosition());  // changing light position each frame
-    light.render(gl);
+    lights[0].setPosition(getLightPosition());  // changing light position each frame
+    lights[0].render(gl);
+    lights[1].render(gl);
+    spotLights[0].render(gl);
+    spotLights[1].setDirection(new Vec3(getLightPosition().x, 0f, getLightPosition().z));
+    spotLights[1].render(gl);
     if (animation) updateLeftArm();
     robotRoot.draw(gl);
     tableRoot.draw(gl);
