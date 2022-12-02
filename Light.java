@@ -5,14 +5,14 @@ import com.jogamp.opengl.*;
   
 public class Light {
   
-  private Material material;
-  private Vec3 position;
-  private Mat4 model;
-  private Shader shader;
-  private Camera camera;
-  private float constant = 1f;
-  private float linear = 0.8f;
-  private float quadratic = 0.032f;
+  protected Material material;
+  protected Vec3 position;
+  protected Mat4 model;
+  protected Shader shader;
+  protected Camera camera;
+  protected float constant = 1f;
+  protected float linear = 0.8f;
+  protected float quadratic = 0.032f;
 
 
   public Light(GL3 gl) {
@@ -20,7 +20,7 @@ public class Light {
     material.setAmbient(0.5f, 0.5f, 0.5f);
     material.setDiffuse(0.8f, 0.8f, 0.8f);
     material.setSpecular(0.8f, 0.8f, 0.8f);
-    position = new Vec3(3f,2f,1f);
+    position = new Vec3(0f, 0f, 0f);
     model = new Mat4(1);
     shader = new Shader(gl, "vs_light_01.txt", "fs_light_01.txt");
     fillBuffers(gl);
@@ -65,6 +65,14 @@ public class Light {
   public void setCamera(Camera camera) {
     this.camera = camera;
   }
+
+  public Camera getCamera() {
+    return camera;
+  }
+
+  public Mat4 getModel() {
+    return model;
+  }
   
   public void render(GL3 gl) {
     Mat4 model = new Mat4(1);
@@ -92,7 +100,7 @@ public class Light {
    */
   // anticlockwise/counterclockwise ordering
   
-    private float[] vertices = new float[] {  // x,y,z
+    protected float[] vertices = new float[] {  // x,y,z
       -0.5f, -0.5f, -0.5f,  // 0
       -0.5f, -0.5f,  0.5f,  // 1
       -0.5f,  0.5f, -0.5f,  // 2
@@ -103,7 +111,7 @@ public class Light {
        0.5f,  0.5f,  0.5f   // 7
      };
     
-    private int[] indices =  new int[] {
+    protected int[] indices =  new int[] {
       0,1,3, // x -ve 
       3,2,0, // x -ve
       4,6,7, // x +ve
@@ -118,16 +126,16 @@ public class Light {
       7,6,2  // y +ve
     };
     
-  private int vertexStride = 3;
-  private int vertexXYZFloats = 3;
+  protected int vertexStride = 3;
+  protected int vertexXYZFloats = 3;
   
   // ***************************************************
   /* THE LIGHT BUFFERS
    */
 
-  private int[] vertexBufferId = new int[1];
-  private int[] vertexArrayId = new int[1];
-  private int[] elementBufferId = new int[1];
+  protected int[] vertexBufferId = new int[1];
+  protected int[] vertexArrayId = new int[1];
+  protected int[] elementBufferId = new int[1];
     
   private void fillBuffers(GL3 gl) {
     gl.glGenVertexArrays(1, vertexArrayId, 0);
