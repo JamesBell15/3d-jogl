@@ -13,9 +13,11 @@ public class Light {
   protected float constant = 1f;
   protected float linear = 0.8f;
   protected float quadratic = 0.032f;
+  protected boolean toggle;
 
 
-  public Light(GL3 gl) {
+  public Light(GL3 gl, boolean toggle) {
+    this.toggle = toggle;
     material = new Material();
     material.setAmbient(0.5f, 0.5f, 0.5f);
     material.setDiffuse(0.8f, 0.8f, 0.8f);
@@ -46,8 +48,22 @@ public class Light {
     material = m;
   }
 
+  public void setToggle(boolean b) {
+    this.toggle = b;
+  }
+
+  public boolean getToggle() {
+    return toggle;
+  }
+
   public Material getMaterial() {
-    return material;
+    if (toggle) return material;
+
+    return new Material(new Vec3(0f, 0f, 0f),
+      new Vec3(0f, 0f, 0f),
+      new Vec3(0f, 0f, 0f),
+      0f
+    );
   }
 
   public float getConstant() {

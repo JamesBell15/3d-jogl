@@ -43,7 +43,7 @@ struct SpotLight {
 };
 
 #define NR_GLOBAL_LIGHTS 2
-#define NR_POINT_LIGHTS 2
+#define NR_POINT_LIGHTS 1
 #define NR_SPOT_LIGHTS 2
 
 in vec3 aPos;
@@ -77,10 +77,10 @@ void main()
 
     for(int i = 0; i < NR_GLOBAL_LIGHTS; i++)
         result += CalcGlobalLight(globalLights[i], norm, viewDir);
-    for(int i = 0; i < NR_POINT_LIGHTS; i++)
-        result += CalcPointLight(lights[i], norm, aPos, viewDir);
+    //for(int i = 0; i < NR_POINT_LIGHTS; i++)
+       // result += CalcPointLight(lights[i], norm, aPos, viewDir);
     // phase 3: spot light
-    for(int i = 0; i < NR_POINT_LIGHTS; i++)
+    for(int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], norm, aPos, viewDir);
 
 

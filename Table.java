@@ -28,17 +28,17 @@ public class Table extends Scene{
   private SGNode root;
   private Model cube, sphere;
 
-  private NameNode surface, legs, egg;
+  private NameNode surface, legs, egg, pedestal;
 
-  private TransformNode tableTransform, surfaceTransform, eggTransform;
+  private TransformNode tableTransform, surfaceTransform, eggTransform, pedestalTransform;
   private TransformNode[] legTransforms = new TransformNode[4];
 
   private TransformNode eggRotateY;
 
-  private TransformNode tableScale, surfaceScale, eggScale;
+  private TransformNode tableScale, surfaceScale, eggScale, pedestalScale;
   private TransformNode[] legScales = new TransformNode[4];
 
-  private ModelNode surfaceShape, eggShape;
+  private ModelNode surfaceShape, eggShape, pedestalShape;
   private ModelNode[] legShapes = new ModelNode[4];
 
 
@@ -46,23 +46,47 @@ public class Table extends Scene{
   private Vec3 surfaceTransformVec3 = new Vec3(0.5f, 1f, 0.5f);
   private Vec3 eggScaleVec3 = new Vec3(1f, 2f, 1f);
 
-  public void update_egg_rotation(float rotate){
-    Mat4 mat4T = Mat4.multiply(Mat4Transform.translate(surfaceTransformVec3), Mat4Transform.translate(eggTransformVec3));
-    mat4T = Mat4.multiply(mat4T, Mat4Transform.scale(eggScaleVec3));
-    mat4T = Mat4.multiply(mat4T, Mat4Transform.rotateAroundY(rotate));
-    eggRotateY.update(mat4T);
-    // eggRotateY.print(0, true);
-    // root.update();
-    // root.print(0, true);
-    // return root;
+  private int step = 0;
+  private int maxStep = 100;
+
+  public void update_egg(float time){
+
+    if (((time%20) > 1) && (step == 0)) return;
+
+    float jump = (float)(Math.abs(2*Math.sin(3.14*((float)step/(float)maxStep))));
+
+    Vec3 transform = new Vec3(
+      0f,
+      jump,
+      0f
+    );
+
+    float rotate = (float)(360*jump);
+
+
+    eggRotateY.setTransform(Mat4.multiply(
+        Mat4Transform.translate(transform),
+        Mat4Transform.rotateAroundY(rotate)
+      )
+    );
+    eggRotateY.update();
+
+    step++;
+
+    if (step >= maxStep) {
+      step = 0;
+    }
+    // eggRotateY.update();
+
+    // eggRotateY.setTransform(Mat4Transform.rotateAroundY(time));
   }
 
   public SGNode get_scene_graph(){
     Mesh mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
     Shader shader = new Shader(gl, "vs_cube.txt", "fs_spotlight.txt");
     Material material = new Material(
-                                      new Vec3(0.0f, 0.5f, 0.81f),
-                                      new Vec3(0.0f, 0.5f, 0.81f),
+                                      new Vec3(0.5f, 0.5f, 0.5f),
+                                      new Vec3(0.5f, 0.5f, 0.5f),
                                       new Vec3(0.3f, 0.3f, 0.3f),
                                       32.0f
                                     );
@@ -71,60 +95,72 @@ public class Table extends Scene{
 
     root = new NameNode("root");
 
-    Vec3 transform = new Vec3(0f, 0f, 0f);
-    tableTransform = new TransformNode("Transform Table", Mat4Transform.translate(transform));
+      Vec3 transform = new Vec3(-0.5f, 1f, -0.5f);
+      tableTransform = new TransformNode("Transform Table", Mat4Transform.translate(transform));
 
-    Vec3 scale = new Vec3(1f, 1f, 1f);
-    tableScale = new TransformNode("Scale Table", Mat4Transform.scale(scale));
+      Vec3 scale = new Vec3(1.5f, 1.5f, 1.5f);
+      tableScale = new TransformNode("Scale Table", Mat4Transform.scale(scale));
 
     surface = new NameNode("surface");
 
-    surfaceTransform = new TransformNode("Transform Surface", Mat4Transform.translate(surfaceTransformVec3));
+      surfaceTransform = new TransformNode("Transform Surface", Mat4Transform.translate(surfaceTransformVec3));
 
-    scale = new Vec3(2f, 0.5f, 2f);
-    surfaceScale = new TransformNode("Scale Surface", Mat4Transform.scale(scale));
+      scale = new Vec3(2f, 0.5f, 2f);
+      surfaceScale = new TransformNode("Scale Surface", Mat4Transform.scale(scale));
 
-    surfaceShape = new ModelNode("Cube Surface", cube);
+      surfaceShape = new ModelNode("Cube Surface", cube);
 
     legs = new NameNode("legs");
 
-    transform = new Vec3(0f, 0f, 0f);
-    legTransforms[0] = new TransformNode("Transform Leg 0", Mat4Transform.translate(transform));
+      transform = new Vec3(0f, 0f, 0f);
+      legTransforms[0] = new TransformNode("Transform Leg 0", Mat4Transform.translate(transform));
 
-    transform = new Vec3(1f, 0f, 0f);
-    legTransforms[1] = new TransformNode("Transform Leg 1", Mat4Transform.translate(transform));
+      transform = new Vec3(1f, 0f, 0f);
+      legTransforms[1] = new TransformNode("Transform Leg 1", Mat4Transform.translate(transform));
 
-    transform = new Vec3(0f, 0f, 1f);
-    legTransforms[2] = new TransformNode("Transform Leg 2", Mat4Transform.translate(transform));
+      transform = new Vec3(0f, 0f, 1f);
+      legTransforms[2] = new TransformNode("Transform Leg 2", Mat4Transform.translate(transform));
 
-    transform = new Vec3(1f, 0f, 1f);
-    legTransforms[3] = new TransformNode("Transform Leg 3", Mat4Transform.translate(transform));
+      transform = new Vec3(1f, 0f, 1f);
+      legTransforms[3] = new TransformNode("Transform Leg 3", Mat4Transform.translate(transform));
 
-    scale = new Vec3(0.25f, 2f, 0.25f);
-    legScales[0] = new TransformNode("Scale Leg 0", Mat4Transform.scale(scale));
-    legScales[1] = new TransformNode("Scale Leg 1", Mat4Transform.scale(scale));
-    legScales[2] = new TransformNode("Scale Leg 2", Mat4Transform.scale(scale));
-    legScales[3] = new TransformNode("Scale Leg 3", Mat4Transform.scale(scale));
+      scale = new Vec3(0.25f, 2f, 0.25f);
+      legScales[0] = new TransformNode("Scale Leg 0", Mat4Transform.scale(scale));
+      legScales[1] = new TransformNode("Scale Leg 1", Mat4Transform.scale(scale));
+      legScales[2] = new TransformNode("Scale Leg 2", Mat4Transform.scale(scale));
+      legScales[3] = new TransformNode("Scale Leg 3", Mat4Transform.scale(scale));
 
-    legShapes[0] = new ModelNode("Cube Leg 0", cube);
-    legShapes[1] = new ModelNode("Cube Leg 1", cube);
-    legShapes[2] = new ModelNode("Cube Leg 2", cube);
-    legShapes[3] = new ModelNode("Cube Leg 3", cube);
+      legShapes[0] = new ModelNode("Cube Leg 0", cube);
+      legShapes[1] = new ModelNode("Cube Leg 1", cube);
+      legShapes[2] = new ModelNode("Cube Leg 2", cube);
+      legShapes[3] = new ModelNode("Cube Leg 3", cube);
+
+    pedestal = new NameNode("pedestal");
+
+      transform = new Vec3(0f, 0.3f, 0f);
+      pedestalTransform = new TransformNode("Transform Pedestal", Mat4Transform.translate(transform));
+
+      scale = new Vec3(1.25f, 0.25f, 1.25f);
+      pedestalScale = new TransformNode("Scale Pedestal", Mat4Transform.scale(scale));
+
+      pedestalShape = new ModelNode("Cube Pedestal", cube);
 
     egg = new NameNode("egg");
 
-    eggTransform = new TransformNode("Transform Egg", Mat4Transform.translate(eggTransformVec3));
+      eggTransform = new TransformNode("Transform Egg", Mat4Transform.translate(eggTransformVec3));
 
-    eggScale = new TransformNode("Scale Egg", Mat4Transform.scale(eggScaleVec3));
+      eggScale = new TransformNode("Scale Egg", Mat4Transform.scale(eggScaleVec3));
 
-    float rotate = 0f;
-    eggRotateY = new TransformNode("Rotate Egg", Mat4Transform.rotateAroundY(rotate));
+      float rotate = 0f;
+      eggRotateY = new TransformNode("Rotate Egg", Mat4Transform.rotateAroundY(rotate));
 
-    mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
+      mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
 
-    sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, eggTextures[0], eggTextures[1]);
+      sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, eggTextures[0], eggTextures[1]);
 
-    eggShape = new ModelNode("Sphere egg", sphere);
+      eggShape = new ModelNode("Sphere egg", sphere);
+
+
 
     root.addChild(tableTransform);
       tableTransform.addChild(tableScale);
@@ -132,6 +168,10 @@ public class Table extends Scene{
           surface.addChild(surfaceTransform);
           surfaceTransform.addChild(surfaceScale);
           surfaceScale.addChild(surfaceShape);
+          surfaceTransform.addChild(pedestal);
+            pedestal.addChild(pedestalTransform);
+              pedestalTransform.addChild(pedestalScale);
+                pedestalScale.addChild(pedestalShape);
           surfaceTransform.addChild(egg);
             egg.addChild(eggTransform);
               eggTransform.addChild(eggScale);

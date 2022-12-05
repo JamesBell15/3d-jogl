@@ -32,4 +32,10 @@ public class SpotLightAnchorNode extends SGNode {
     light.setDirection(getNewDirection());
   }
 
+  public void draw(GL3 gl) {
+    for (int i=0; i<children.size(); i++) {
+      children.get(i).draw(gl);
+    }
+  }
+
 }

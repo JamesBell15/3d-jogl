@@ -43,31 +43,39 @@ public class Hatch extends JFrame implements ActionListener {
     menuBar.add(fileMenu);
     
     JPanel p = new JPanel();
-      JButton b = new JButton("camera X");
+      p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+
+      JButton b = new JButton("Global Light 1 toggle");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("camera Z");
+      b = new JButton("Global Light 2 toggle");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("start");
+      b = new JButton("Spot Light 1 toggle");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("stop");
+      b = new JButton("Spot Light 2 toggle");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("increase X position");
+      b = new JButton("Lamp 1 pose 1");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("decrease X position");
+      b = new JButton("Lamp 1 pose 2");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("lowered arms");
+      b = new JButton("Lamp 1 pose 3");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("raised arms");
+      b = new JButton("Lamp 2 pose 1");
       b.addActionListener(this);
       p.add(b);
-    this.add(p, BorderLayout.SOUTH);
+      b = new JButton("Lamp 2 pose 2");
+      b.addActionListener(this);
+      p.add(b);
+      b = new JButton("Lamp 2 pose 3");
+      b.addActionListener(this);
+      p.add(b);
+    this.add(p, BorderLayout.EAST);
     
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
@@ -82,31 +90,35 @@ public class Hatch extends JFrame implements ActionListener {
   }
   
   public void actionPerformed(ActionEvent e) {
-    if (e.getActionCommand().equalsIgnoreCase("camera X")) {
-      camera.setCamera(Camera.CameraType.X);
-      canvas.requestFocusInWindow();
+    if (e.getActionCommand().equalsIgnoreCase("Global Light 1 toggle")) {
+      glEventListener.toggleGlobalLight(0);
     }
-    else if (e.getActionCommand().equalsIgnoreCase("camera Z")) {
-      camera.setCamera(Camera.CameraType.Z);
-      canvas.requestFocusInWindow();
+    else if (e.getActionCommand().equalsIgnoreCase("Global Light 2 toggle")) {
+      glEventListener.toggleGlobalLight(1);
     }
-    else if (e.getActionCommand().equalsIgnoreCase("start")) {
-      glEventListener.startAnimation();
+    else if (e.getActionCommand().equalsIgnoreCase("Spot Light 1 toggle")) {
+      glEventListener.toggleSpotLight(0);
     }
-    else if (e.getActionCommand().equalsIgnoreCase("stop")) {
-      glEventListener.stopAnimation();
+    else if (e.getActionCommand().equalsIgnoreCase("Spot Light 2 toggle")) {
+      glEventListener.toggleSpotLight(1);
     }
-    else if (e.getActionCommand().equalsIgnoreCase("increase X position")) {
-      glEventListener.incXPosition();
+    else if (e.getActionCommand().equalsIgnoreCase("Lamp 1 pose 1")) {
+      glEventListener.setLampRotations(0, 0f, -30.0f, 90f, 20f);
     }
-    else if (e.getActionCommand().equalsIgnoreCase("decrease X position")) {
-      glEventListener.decXPosition();
+    else if (e.getActionCommand().equalsIgnoreCase("Lamp 1 pose 2")) {
+      glEventListener.setLampRotations(0, 0f, -60.0f, 130f, 180f);
     }
-    else if (e.getActionCommand().equalsIgnoreCase("lowered arms")) {
-      glEventListener.loweredArms();
+    else if (e.getActionCommand().equalsIgnoreCase("Lamp 1 pose 3")) {
+      glEventListener.setLampRotations(0, -90f, -60.0f, 130f, -20f);
     }
-    else if (e.getActionCommand().equalsIgnoreCase("raised arms")) {
-      glEventListener.raisedArms();
+    else if (e.getActionCommand().equalsIgnoreCase("Lamp 2 pose 1")) {
+      glEventListener.setLampRotations(1, 0f, -30.0f, 90f, 20f);
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Lamp 2 pose 2")) {
+      glEventListener.setLampRotations(1, 0f, -60.0f, 130f, 180f);
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Lamp 2 pose 3")) {
+      glEventListener.setLampRotations(1,  -90f, -60.0f, 130f, -20f);
     }
     else if(e.getActionCommand().equalsIgnoreCase("quit"))
       System.exit(0);

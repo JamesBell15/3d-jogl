@@ -12,8 +12,8 @@ public class SpotLight extends Light {
   private float linear = 0.0008f;
   private float quadratic = 0.000032f;
 
-  public SpotLight(GL3 gl, Vec3 direction, float cutOff, float outerCutOff) {
-    super(gl);
+  public SpotLight(GL3 gl, Vec3 direction, float cutOff, float outerCutOff, boolean toggle) {
+    super(gl, toggle);
 
     this.direction = direction;
     this.cutOff = cutOff;
@@ -41,6 +41,8 @@ public class SpotLight extends Light {
   }
 
   public void render(GL3 gl, Mat4 modelMatrix) {
+    if (!toggle) return;
+
     Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), modelMatrix));
 
     shader.use(gl);
