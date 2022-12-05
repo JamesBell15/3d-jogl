@@ -65,7 +65,7 @@ public class AnglePoiseLamp extends Scene {
 
     root = new NameNode("root");
 
-    Vec3 transform = new Vec3(5f, 0f, 0f);
+    Vec3 transform = new Vec3(3f, 0f, 0f);
     lampTransform = new TransformNode("Transform Lamp", Mat4Transform.translate(transform));
 
     Vec3 scale = new Vec3(2f, 2f, 2f);
@@ -87,7 +87,7 @@ public class AnglePoiseLamp extends Scene {
     float rotate = 0f;
     lowerArmRotateY =  new TransformNode("Rotate Y lower arm", Mat4Transform.rotateAroundY(rotate));
 
-    rotate = 0f;
+    rotate = -60f;
     lowerArmRotateZ =  new TransformNode("Rotate Z lower arm", Mat4Transform.rotateAroundZ(rotate));
 
     lowerArm = new NameNode("lower arm");
@@ -102,7 +102,7 @@ public class AnglePoiseLamp extends Scene {
 
     joint = new NameNode("joint");
 
-    rotate = 90f;
+    rotate = 150f;
     jointRotateZ =  new TransformNode("Rotate Z joint", Mat4Transform.rotateAroundZ(rotate));
 
     transform = new Vec3(0f, 1f, 0f);
@@ -123,7 +123,7 @@ public class AnglePoiseLamp extends Scene {
 
     upperArmShape = new ModelNode("Sphere upper Arm", sphere);
 
-    rotate = 50f;
+    rotate = -90f;
     headRotateZ =  new TransformNode("Rotate Z head", Mat4Transform.rotateAroundZ(rotate));
 
     head = new NameNode("head");

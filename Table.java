@@ -9,34 +9,53 @@ import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
 
 public class Table extends Scene{
-  private Texture tableTextureId;
+  private Texture tableTexture;
+  private Texture[] eggTextures;
 
   public Table(GL3 gl,
               Camera camera,
               Light[] lights,
               GlobalLight[] globalLights,
               SpotLight[] spotLights,
-              Texture tableTextureId
+              Texture tableTexture,
+              Texture[] eggTextures
             ){
     super(gl, camera, lights, globalLights, spotLights);
-    this.tableTextureId = tableTextureId;
+    this.tableTexture = tableTexture;
+    this.eggTextures = eggTextures;
   }
 
   private SGNode root;
-  private Model cube;
+  private Model cube, sphere;
 
-  private NameNode surface, legs;
+  private NameNode surface, legs, egg;
 
-  private TransformNode tableTransform, surfaceTransform;
+  private TransformNode tableTransform, surfaceTransform, eggTransform;
   private TransformNode[] legTransforms = new TransformNode[4];
 
-  private TransformNode tableScale, surfaceScale;
+  private TransformNode eggRotateY;
+
+  private TransformNode tableScale, surfaceScale, eggScale;
   private TransformNode[] legScales = new TransformNode[4];
 
-  private ModelNode surfaceShape;
+  private ModelNode surfaceShape, eggShape;
   private ModelNode[] legShapes = new ModelNode[4];
 
 
+  private Vec3 eggTransformVec3 = new Vec3(0f, 1f, 0f);
+  private Vec3 surfaceTransformVec3 = new Vec3(0.5f, 1f, 0.5f);
+  private Vec3 eggScaleVec3 = new Vec3(1f, 2f, 1f);
+
+  public void update_egg_rotation(float rotate){
+    Mat4 mat4T = Mat4.multiply(Mat4Transform.translate(surfaceTransformVec3), Mat4Transform.translate(eggTransformVec3));
+    mat4T = Mat4.multiply(mat4T, Mat4Transform.scale(eggScaleVec3));
+    mat4T = Mat4.multiply(mat4T, Mat4Transform.rotateAroundY(rotate));
+    eggRotateY.update(mat4T);
+    // eggRotateY.print(0, true);
+    // root.update();
+    // root.print(0, true);
+    // return root;
+  }
 
   public SGNode get_scene_graph(){
     Mesh mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
@@ -48,7 +67,7 @@ public class Table extends Scene{
                                       32.0f
                                     );
     Mat4 modelMatrix = Mat4Transform.scale(1f, 1f, 1f);
-    cube = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, tableTextureId);
+    cube = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, tableTexture);
 
     root = new NameNode("root");
 
@@ -60,8 +79,7 @@ public class Table extends Scene{
 
     surface = new NameNode("surface");
 
-    transform = new Vec3(0.5f, 1f, 0.5f);
-    surfaceTransform = new TransformNode("Transform Surface", Mat4Transform.translate(transform));
+    surfaceTransform = new TransformNode("Transform Surface", Mat4Transform.translate(surfaceTransformVec3));
 
     scale = new Vec3(2f, 0.5f, 2f);
     surfaceScale = new TransformNode("Scale Surface", Mat4Transform.scale(scale));
@@ -93,6 +111,20 @@ public class Table extends Scene{
     legShapes[2] = new ModelNode("Cube Leg 2", cube);
     legShapes[3] = new ModelNode("Cube Leg 3", cube);
 
+    egg = new NameNode("egg");
+
+    eggTransform = new TransformNode("Transform Egg", Mat4Transform.translate(eggTransformVec3));
+
+    eggScale = new TransformNode("Scale Egg", Mat4Transform.scale(eggScaleVec3));
+
+    float rotate = 0f;
+    eggRotateY = new TransformNode("Rotate Egg", Mat4Transform.rotateAroundY(rotate));
+
+    mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
+
+    sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, eggTextures[0], eggTextures[1]);
+
+    eggShape = new ModelNode("Sphere egg", sphere);
 
     root.addChild(tableTransform);
       tableTransform.addChild(tableScale);
@@ -100,6 +132,11 @@ public class Table extends Scene{
           surface.addChild(surfaceTransform);
           surfaceTransform.addChild(surfaceScale);
           surfaceScale.addChild(surfaceShape);
+          surfaceTransform.addChild(egg);
+            egg.addChild(eggTransform);
+              eggTransform.addChild(eggScale);
+                eggScale.addChild(eggRotateY);
+                  eggRotateY.addChild(eggShape);
         tableScale.addChild(legs);
           legs.addChild(legTransforms[0]);
           legTransforms[0].addChild(legScales[0]);

@@ -133,7 +133,8 @@ public class Hatch_GLEventListener implements GLEventListener {
   private Light[] lights = new Light[Constants.NUMBER_OF_POINT_LIGHTS];
   private SpotLight[] spotLights = new SpotLight[Constants.NUMBER_OF_SPOT_LIGHTS];
   private SGNode robotRoot, roomRoot, tableRoot, lampOneRoot;
-  
+  private Table table;
+
   private Mesh mesh;
   private Shader shader;
   private Material material;
@@ -211,7 +212,9 @@ public class Hatch_GLEventListener implements GLEventListener {
     Room room = new Room(gl, camera, lights, globalLights, spotLights, textureId1, textureId0, textureId7);
     roomRoot = room.get_scene_graph();
 
-    Table table = new Table(gl, camera, lights, globalLights, spotLights, textureId5);
+    Texture[] eggTextures = new Texture[]{textureId3, textureId4};
+
+    table = new Table(gl, camera, lights, globalLights, spotLights, textureId5, eggTextures);
     tableRoot = table.get_scene_graph();
 
     AnglePoiseLamp anglePoiseLamp = new AnglePoiseLamp(gl, camera, lights, globalLights, spotLights, textureId1);
@@ -339,6 +342,7 @@ public class Hatch_GLEventListener implements GLEventListener {
     if (animation) updateLeftArm();
     lampOneRoot.draw(gl);
     robotRoot.draw(gl);
+    table.update_egg_rotation((float)(Math.sin(Math.toRadians((getSeconds()-startTime)*50))*180));
     tableRoot.draw(gl);
     // System.out.println(spotLights[0].getPosition());
     // order matters draw transparent last
