@@ -9,7 +9,7 @@ import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
 
 public class Table extends Scene{
-  private Texture tableTexture;
+  private Texture tableTexture, pedestalTexture;
   private Texture[] eggTextures;
 
   public Table(GL3 gl,
@@ -18,11 +18,13 @@ public class Table extends Scene{
               GlobalLight[] globalLights,
               SpotLight[] spotLights,
               Texture tableTexture,
+              Texture pedestalTexture,
               Texture[] eggTextures
             ){
     super(gl, camera, lights, globalLights, spotLights);
     this.tableTexture = tableTexture;
     this.eggTextures = eggTextures;
+    this.pedestalTexture = pedestalTexture;
   }
 
   private SGNode root;
@@ -73,12 +75,7 @@ public class Table extends Scene{
 
     step++;
 
-    if (step >= maxStep) {
-      step = 0;
-    }
-    // eggRotateY.update();
-
-    // eggRotateY.setTransform(Mat4Transform.rotateAroundY(time));
+    if (step >= maxStep) step = 0;
   }
 
   public SGNode get_scene_graph(){
@@ -143,6 +140,14 @@ public class Table extends Scene{
       scale = new Vec3(1.25f, 0.25f, 1.25f);
       pedestalScale = new TransformNode("Scale Pedestal", Mat4Transform.scale(scale));
 
+      material = new Material(
+                              new Vec3(0.5f, 0.5f, 0.5f),
+                              new Vec3(0.5f, 0.5f, 0.5f),
+                              new Vec3(1f, 1f, 1f),
+                              64.0f
+                            );
+
+      cube = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, pedestalTexture);
       pedestalShape = new ModelNode("Cube Pedestal", cube);
 
     egg = new NameNode("egg");
@@ -155,6 +160,13 @@ public class Table extends Scene{
       eggRotateY = new TransformNode("Rotate Egg", Mat4Transform.rotateAroundY(rotate));
 
       mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
+
+      material = new Material(
+        new Vec3(1.0f, 0.5f, 0.31f),
+        new Vec3(1.0f, 0.5f, 0.31f),
+        new Vec3(0.5f, 0.5f, 0.5f),
+        32.0f
+      );
 
       sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, eggTextures[0], eggTextures[1]);
 

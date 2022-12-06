@@ -9,7 +9,7 @@ import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
 
 public class Room extends Scene {
-  private Texture wallTextureId;
+  private Texture[] wallTextures;
   private Texture floorTextureId;
   private Texture windowTextureId;
 
@@ -18,12 +18,12 @@ public class Room extends Scene {
               Light[] lights,
               GlobalLight[] globalLights,
               SpotLight[] spotLights,
-              Texture wallTextureId,
+              Texture[] wallTextures,
               Texture floorTextureId,
               Texture windowTextureId
             ){
     super(gl, camera, lights, globalLights, spotLights);
-    this.wallTextureId = wallTextureId;
+    this.wallTextures = wallTextures;
     this.floorTextureId = floorTextureId;
     this.windowTextureId = windowTextureId;
   }
@@ -69,7 +69,7 @@ public class Room extends Scene {
     ModelNode floorShape = new ModelNode("Two Triangles(floor)", twoTriangles);
 
     // Walls
-    twoTriangles = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, wallTextureId);
+    twoTriangles = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, wallTextures[1]);
 
     // Wall 0
     NameNode roomWall0 = new NameNode("wall 0");
@@ -89,12 +89,13 @@ public class Room extends Scene {
     transform = new Vec3(-0.5f, 0.5f, 0f);
     wallTransform1 = new TransformNode("Transform Wall 1", Mat4Transform.translate(transform));
 
-    rotate = 270f;
+    rotate = -90f;
     wallRotate1 =  new TransformNode("Rotate Wall 1", Mat4Transform.rotateAroundZ(rotate));
 
     scale = new Vec3(1f, 1f, 1f);
     wallScale1 = new TransformNode("Scale Wall 1", Mat4Transform.scale(scale));
 
+    twoTriangles = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, wallTextures[0]);
     ModelNode wallShape1 = new ModelNode("Two Triangles(Wall 1)", twoTriangles);
 
     // Window

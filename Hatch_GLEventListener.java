@@ -153,9 +153,10 @@ public class Hatch_GLEventListener implements GLEventListener {
   private GlobalLight[] globalLights = new GlobalLight[Constants.NUMBER_OF_GLOBAL_LIGHTS];
   private Light[] lights = new Light[Constants.NUMBER_OF_POINT_LIGHTS];
   private SpotLight[] spotLights = new SpotLight[Constants.NUMBER_OF_SPOT_LIGHTS];
-  private SGNode robotRoot, roomRoot, tableRoot, lampOneRoot, lampTwoRoot;
+  private SGNode robotRoot, roomRoot, spaceRoot, tableRoot, lampOneRoot, lampTwoRoot;
   private Table table;
   private AnglePoiseLamp anglePoiseLamp1, anglePoiseLamp2;
+  private Space space;
 
   private Mesh mesh;
   private Shader shader;
@@ -167,31 +168,38 @@ public class Hatch_GLEventListener implements GLEventListener {
   private void initialise(GL3 gl) {
     createRandomNumbers();
 
-    Texture textureId0 = TextureLibrary.loadTexture(gl, "textures/chequerboard.jpg");
-    Texture textureId1 = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
-    Texture textureId2 = TextureLibrary.loadTexture(gl, "textures/jade_specular.jpg");
-    Texture textureId3 = TextureLibrary.loadTexture(gl, "textures/container2.jpg");
-    Texture textureId4 = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
-    Texture textureId5 = TextureLibrary.loadTexture(gl, "textures/wattBook.jpg");
-    Texture textureId6 = TextureLibrary.loadTexture(gl, "textures/wattBook_specular.jpg");
-    Texture textureId7 = TextureLibrary.loadTexture(gl, "textures/window.png");
+    Texture textureFloor = TextureLibrary.loadTexture(gl, "textures/floor.jpg");
+    Texture textureWindow = TextureLibrary.loadTexture(gl, "textures/window.png");
+    Texture textureWall = TextureLibrary.loadTexture(gl, "textures/wall.png");
+    Texture textureDefaultWall = TextureLibrary.loadTexture(gl, "textures/default_wall.jpg");
+    Texture textureJade = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
+    Texture textureJadeSpecular = TextureLibrary.loadTexture(gl, "textures/jade_specular.jpg");
+    Texture textureEgg = TextureLibrary.loadTexture(gl, "textures/egg.png");
+    Texture textureEggSpecular = TextureLibrary.loadTexture(gl, "textures/egg_specular.png");
+    Texture textureContainer = TextureLibrary.loadTexture(gl, "textures/container2.jpg");
+    Texture textureContrainerSpecular = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
+    Texture textureWood = TextureLibrary.loadTexture(gl, "textures/wood.jpg");
+    Texture texturePedestal = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
+    Texture textureSpace = TextureLibrary.loadTexture(gl, "textures/space_texture_2.jpg");
+    Texture texturePlanet = TextureLibrary.loadTexture(gl, "textures/marsmap1k.jpg");
+    Texture textureRing = TextureLibrary.loadTexture(gl, "textures/ring.png");
         
     globalLights[0] = new GlobalLight(
       new Vec3(1f, 0f, 0f),
-      new Vec3(0.5f, 0f, 0.5f),
-      new Vec3(0.5f, 0f, 0.5f),
-      new Vec3(0.5f, 0f, 0.5f),
+      new Vec3(0.25f, 0.25f, 0.25f),
+      new Vec3(0.25f, 0.25f, 0.25f),
+      new Vec3(0.25f, 0.25f, 0.25f),
       true
     );
     globalLights[1] = new GlobalLight(
       new Vec3(0f, 0f, 1f),
-      new Vec3(0f, 0.5f, 0f),
-      new Vec3(0f, 0.5f, 0f),
-      new Vec3(0f, 0.5f, 0f),
+      new Vec3(0.25f, 0.25f, 0.25f),
+      new Vec3(0.25f, 0.25f, 0.25f),
+      new Vec3(0.25f, 0.25f, 0.25f),
       true
     );
 
-    material = new Material(new Vec3(0f, 1f, 0f), new Vec3(0f, 1f, 0f), new Vec3(0f, 1f, 0f), 200000f);
+    material = new Material(new Vec3(0f, 1f, 0f), new Vec3(1f, 1f, 1f), new Vec3(0f, 1f, 0f), 200000f);
 
     float cutOff = (float) Math.cos(5.0*Math.PI/180.0);
     float outerCutOff = (float) Math.cos(35.0*Math.PI/180.0);
@@ -201,18 +209,23 @@ public class Hatch_GLEventListener implements GLEventListener {
     // spotLights[0].setPosition(new Vec3(0f, 0f, 0f));
     spotLights[0].setCamera(camera);
 
-    material = new Material(new Vec3(1f, 0f, 1f), new Vec3(1f, 0f, 1f), new Vec3(1f, 0f, 1f), 2000f);
+    material = new Material(new Vec3(1f, 0f, 1f), new Vec3(1f, 1f, 1f), new Vec3(1f, 0f, 1f), 2000f);
 
     spotLights[1] = new SpotLight(gl, new Vec3(0f, 0f, 0f), cutOff, outerCutOff, true);
     spotLights[1].setMaterial(material);
     spotLights[1].setCamera(camera);
 
-    Room room = new Room(gl, camera, lights, globalLights, spotLights, textureId1, textureId0, textureId7);
+    Texture[] wallTextures = new Texture[]{textureWall, textureDefaultWall};
+
+    Room room = new Room(gl, camera, lights, globalLights, spotLights, wallTextures, textureFloor, textureWindow);
     roomRoot = room.get_scene_graph();
 
-    Texture[] eggTextures = new Texture[]{textureId3, textureId4};
+    space = new Space(gl, camera, lights, globalLights, spotLights, textureSpace, texturePlanet, textureRing);
+    spaceRoot = space.get_scene_graph();
 
-    table = new Table(gl, camera, lights, globalLights, spotLights, textureId5, eggTextures);
+    Texture[] eggTextures = new Texture[]{textureEgg, textureEggSpecular};
+
+    table = new Table(gl, camera, lights, globalLights, spotLights, textureWood, texturePedestal, eggTextures);
     tableRoot = table.get_scene_graph();
 
     anglePoiseLamp1 = new AnglePoiseLamp(
@@ -221,14 +234,15 @@ public class Hatch_GLEventListener implements GLEventListener {
       lights,
       globalLights,
       spotLights,
-      textureId1,
+      textureJade,
       spotLights[0],
-      new Vec3(3f, 0f, 0f),
+      new Vec3(4f, 0f, 0f),
       new Vec3(2f, 2f, 2f),
       0f,
-      -60.0f,
-      150f,
-      -90f
+      0f,
+      0f,
+      0f,
+      true
     );
     lampOneRoot = anglePoiseLamp1.get_scene_graph();
 
@@ -238,14 +252,15 @@ public class Hatch_GLEventListener implements GLEventListener {
       lights,
       globalLights,
       spotLights,
-      textureId1,
+      textureJade,
       spotLights[1],
       new Vec3(-5f, 0f, 0f),
-      new Vec3(0.5f, 0.5f, 0.5f),
-      180f,
-      -60.0f,
-      160f,
-      -90f
+      new Vec3(0.75f, 0.75f, 0.75f),
+      0f,
+      0f,
+      0f,
+      0f,
+      false
     );
     lampTwoRoot = anglePoiseLamp2.get_scene_graph();
 
@@ -253,15 +268,15 @@ public class Hatch_GLEventListener implements GLEventListener {
       shader = new Shader(gl, "vs_cube.txt", "fs_spotlight.txt");
       material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
       modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-      sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureId1, textureId2);
+      sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureJade, textureJadeSpecular);
 
       mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
       shader = new Shader(gl, "vs_cube.txt", "fs_spotlight.txt");
       material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
       modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-      cube = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureId3, textureId4);
+      cube = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureContainer, textureContrainerSpecular);
 
-      cube2 = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureId5, textureId6);
+      cube2 = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureWood, textureSpace);
 
       // robot
 
@@ -363,14 +378,16 @@ public class Hatch_GLEventListener implements GLEventListener {
  
   private void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-    double elapsedTime = getSeconds()-startTime;
+    float elapsedTime = (float)(getSeconds()-startTime);
     if (animation) updateLeftArm();
+    space.animate_planet(elapsedTime);
+    spaceRoot.draw(gl);
     anglePoiseLamp1.update_rotations(lampRotations[0]);
     lampOneRoot.draw(gl);
     anglePoiseLamp2.update_rotations(lampRotations[1]);
     lampTwoRoot.draw(gl);
     robotRoot.draw(gl);
-    table.update_egg((float)elapsedTime);
+    table.update_egg(elapsedTime);
     tableRoot.draw(gl);
     // order matters draw transparent last
     roomRoot.draw(gl);
