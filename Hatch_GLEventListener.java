@@ -59,8 +59,6 @@ public class Hatch_GLEventListener implements GLEventListener {
   /* Clean up memory, if necessary */
   public void dispose(GLAutoDrawable drawable) {
     GL3 gl = drawable.getGL().getGL3();
-    // lights[0].dispose(gl);
-    // lights[1].dispose(gl);
     spotLights[0].dispose(gl);
     spotLights[1].dispose(gl);
     floor.dispose(gl);
@@ -202,7 +200,7 @@ public class Hatch_GLEventListener implements GLEventListener {
       true
     );
 
-    material = new Material(new Vec3(0f, 1f, 0f), new Vec3(1f, 1f, 1f), new Vec3(0f, 1f, 0f), 200000f);
+    material = new Material(new Vec3(1f, 1f, 1f), new Vec3(1f, 1f, 1f), new Vec3(1f, 1f, 1f), 34f);
 
     float cutOff = (float) Math.cos(5.0*Math.PI/180.0);
     float outerCutOff = (float) Math.cos(35.0*Math.PI/180.0);
@@ -211,7 +209,7 @@ public class Hatch_GLEventListener implements GLEventListener {
     spotLights[0].setMaterial(material);
     spotLights[0].setCamera(camera);
 
-    material = new Material(new Vec3(1f, 0f, 1f), new Vec3(1f, 1f, 1f), new Vec3(1f, 0f, 1f), 2000f);
+    material = new Material(new Vec3(1f, 1f, 1f), new Vec3(1f, 1f, 1f), new Vec3(1f, 1f, 1f), 34f);
 
     spotLights[1] = new SpotLight(gl, new Vec3(0f, 0f, 0f), cutOff, outerCutOff, true);
     spotLights[1].setMaterial(material);

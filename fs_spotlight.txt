@@ -55,6 +55,8 @@ uniform GlobalLight globalLights[NR_GLOBAL_LIGHTS];
 uniform PointLight lights[NR_POINT_LIGHTS];
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 uniform Material material;
+uniform sampler2D first_texture;
+uniform sampler2D second_texture;
 
 // function prototypes
 vec3 CalcGlobalLight(GlobalLight light, vec3 normal, vec3 viewDir);
@@ -66,7 +68,6 @@ void main()
     // properties
     vec3 norm = normalize(aNormal);
     vec3 viewDir = normalize(viewPos - aPos);
-
     // == =====================================================
     // Our lighting is set up in 3 phases: directional, point lights and an optional flashlight
     // For each phase, a calculate function is defined that calculates the corresponding color

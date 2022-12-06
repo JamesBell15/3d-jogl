@@ -64,6 +64,8 @@ public class Model {
     shader.use(gl);
     shader.setFloatArray(gl, "model", modelMatrix.toFloatArrayForGLSL());
     shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+    shader.setInt(gl, "material.diffuse", 0);
+    shader.setInt(gl, "material.specular", 1);
     
     shader.setVec3(gl, "viewPos", camera.getPosition());
 
