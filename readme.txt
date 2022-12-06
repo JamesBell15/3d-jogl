@@ -7,4 +7,3 @@ There is a shellscript to run the project.
   "sh run.sh Hatch" with the path file
 
 Follow this link for a video demonstration:
-  https://youtu.be/GQrwnam5L2w

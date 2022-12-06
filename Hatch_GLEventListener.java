@@ -61,10 +61,6 @@ public class Hatch_GLEventListener implements GLEventListener {
     GL3 gl = drawable.getGL().getGL3();
     spotLights[0].dispose(gl);
     spotLights[1].dispose(gl);
-    floor.dispose(gl);
-    sphere.dispose(gl);
-    cube.dispose(gl);
-    cube2.dispose(gl);
   }
   
   
@@ -150,7 +146,6 @@ public class Hatch_GLEventListener implements GLEventListener {
 
   private Camera camera;
   private Mat4 perspective, modelMatrix;
-  private Model floor, sphere, cube, cube2, twoTriangles;
   private GlobalLight[] globalLights = new GlobalLight[Constants.NUMBER_OF_GLOBAL_LIGHTS];
   private Light[] lights = new Light[Constants.NUMBER_OF_POINT_LIGHTS];
   private SpotLight[] spotLights = new SpotLight[Constants.NUMBER_OF_SPOT_LIGHTS];

@@ -106,14 +106,16 @@ public class Model {
     shader.setFloat(gl, "material.shininess", material.getShininess());  
 
     if (textureId1!=null) {
-      shader.setInt(gl, "first_texture", 0);  // be careful to match these with GL_TEXTURE0 and GL_TEXTURE1
+      shader.setInt(gl, "material.diffuse", 0);  // be careful to match these with GL_TEXTURE0 and GL_TEXTURE1
       gl.glActiveTexture(GL.GL_TEXTURE0);
       textureId1.bind(gl);
     }
     if (textureId2!=null) {
-      shader.setInt(gl, "second_texture", 1);
+      shader.setInt(gl, "material.specular", 1);
       gl.glActiveTexture(GL.GL_TEXTURE1);
       textureId2.bind(gl);
+    } else {
+      shader.setInt(gl, "material.specular", 0);
     }
     mesh.render(gl);
   } 
