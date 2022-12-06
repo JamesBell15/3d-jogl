@@ -8,6 +8,9 @@ import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
 
+/* I declare that this code is my own work */
+/* Author James Bell jbell15@sheffield.ac.uk */
+
 public class Room extends Scene {
   private Texture[] wallTextures;
   private Texture floorTextureId;
@@ -53,7 +56,7 @@ public class Room extends Scene {
     // Room
     root = new NameNode("root");
     float scaleFactor = 16f;
-    Vec3 scale = new Vec3(scaleFactor, scaleFactor, scaleFactor);
+    Vec3 scale = new Vec3(1.5f*scaleFactor, scaleFactor, scaleFactor);
     roomScale = new TransformNode("Scale Room", Mat4Transform.scale(scale));
 
     // Floor

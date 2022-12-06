@@ -8,6 +8,9 @@ import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
   
+/* I declare that this code is my own work */
+/* Author James Bell jbell15@sheffield.ac.uk */
+
 public class Hatch_GLEventListener implements GLEventListener {
   
   private static final boolean DISPLAY_SHADERS = false;
@@ -172,17 +175,17 @@ public class Hatch_GLEventListener implements GLEventListener {
     Texture textureWindow = TextureLibrary.loadTexture(gl, "textures/window.png");
     Texture textureWall = TextureLibrary.loadTexture(gl, "textures/wall.png");
     Texture textureDefaultWall = TextureLibrary.loadTexture(gl, "textures/default_wall.jpg");
-    Texture textureJade = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
-    Texture textureJadeSpecular = TextureLibrary.loadTexture(gl, "textures/jade_specular.jpg");
     Texture textureEgg = TextureLibrary.loadTexture(gl, "textures/egg.png");
     Texture textureEggSpecular = TextureLibrary.loadTexture(gl, "textures/egg_specular.png");
-    Texture textureContainer = TextureLibrary.loadTexture(gl, "textures/container2.jpg");
-    Texture textureContrainerSpecular = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
     Texture textureWood = TextureLibrary.loadTexture(gl, "textures/wood.jpg");
     Texture texturePedestal = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
     Texture textureSpace = TextureLibrary.loadTexture(gl, "textures/space_texture_2.jpg");
     Texture texturePlanet = TextureLibrary.loadTexture(gl, "textures/marsmap1k.jpg");
     Texture textureRing = TextureLibrary.loadTexture(gl, "textures/ring.png");
+    Texture textureLamp1 = TextureLibrary.loadTexture(gl, "textures/lamp1.png");
+    Texture textureLamp2 = TextureLibrary.loadTexture(gl, "textures/lamp2.png");
+    Texture textureLampGrowth = TextureLibrary.loadTexture(gl, "textures/growth.png");
+    Texture textureLampEye = TextureLibrary.loadTexture(gl, "textures/eye.png");
         
     globalLights[0] = new GlobalLight(
       new Vec3(1f, 0f, 0f),
@@ -206,7 +209,6 @@ public class Hatch_GLEventListener implements GLEventListener {
 
     spotLights[0] = new SpotLight(gl, new Vec3(0f, 0f, 0f), cutOff, outerCutOff, true);
     spotLights[0].setMaterial(material);
-    // spotLights[0].setPosition(new Vec3(0f, 0f, 0f));
     spotLights[0].setCamera(camera);
 
     material = new Material(new Vec3(1f, 0f, 1f), new Vec3(1f, 1f, 1f), new Vec3(1f, 0f, 1f), 2000f);
@@ -234,17 +236,21 @@ public class Hatch_GLEventListener implements GLEventListener {
       lights,
       globalLights,
       spotLights,
-      textureJade,
+      textureLamp1,
+      textureLampEye,
+      textureLampGrowth,
       spotLights[0],
-      new Vec3(4f, 0f, 0f),
+      new Vec3(6f, 0f, 0f),
       new Vec3(2f, 2f, 2f),
       0f,
-      0f,
-      0f,
-      0f,
+      -60.0f,
+      130f,
+      -90f,
       true
     );
+
     lampOneRoot = anglePoiseLamp1.get_scene_graph();
+    setLampRotations(0, 0f, -60.0f, 130f, -90f);
 
     anglePoiseLamp2 = new AnglePoiseLamp(
       gl,
@@ -252,128 +258,20 @@ public class Hatch_GLEventListener implements GLEventListener {
       lights,
       globalLights,
       spotLights,
-      textureJade,
+      textureLamp2,
+      textureLampEye,
+      textureLampGrowth,
       spotLights[1],
       new Vec3(-5f, 0f, 0f),
-      new Vec3(0.75f, 0.75f, 0.75f),
-      0f,
-      0f,
-      0f,
-      0f,
+      new Vec3(1f, 1f, 1f),
+      180f,
+      -30.0f,
+      90f,
+      -80f,
       false
     );
     lampTwoRoot = anglePoiseLamp2.get_scene_graph();
-
-    mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
-      shader = new Shader(gl, "vs_cube.txt", "fs_spotlight.txt");
-      material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-      modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-      sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureJade, textureJadeSpecular);
-
-      mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
-      shader = new Shader(gl, "vs_cube.txt", "fs_spotlight.txt");
-      material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-      modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-      cube = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureContainer, textureContrainerSpecular);
-
-      cube2 = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, textureWood, textureSpace);
-
-      // robot
-
-      float bodyHeight = 3f;
-      float bodyWidth = 2f;
-      float bodyDepth = 1f;
-      float headScale = 2f;
-      float armLength = 3.5f;
-      float armScale = 0.5f;
-      float legLength = 3.5f;
-      float legScale = 0.67f;
-
-      robotRoot = new NameNode("root");
-      robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,-16));
-
-      TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
-
-      NameNode body = new NameNode("body");
-        Mat4 m = Mat4Transform.scale(bodyWidth,bodyHeight,bodyDepth);
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode bodyTransform = new TransformNode("body transform", m);
-          ModelNode bodyShape = new ModelNode("Cube(body)", cube);
-
-      NameNode head = new NameNode("head");
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(0,bodyHeight,0));
-        m = Mat4.multiply(m, Mat4Transform.scale(headScale,headScale,headScale));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode headTransform = new TransformNode("head transform", m);
-          ModelNode headShape = new ModelNode("Sphere(head)", sphere);
-
-     NameNode leftarm = new NameNode("left arm");
-        TransformNode leftArmTranslate = new TransformNode("leftarm translate",
-                                             Mat4Transform.translate((bodyWidth*0.5f)+(armScale*0.5f),bodyHeight,0));
-        leftArmRotate = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundX(180));
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(armScale,armLength,armScale));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode leftArmScale = new TransformNode("leftarm scale", m);
-          ModelNode leftArmShape = new ModelNode("Cube(left arm)", cube2);
-
-      NameNode rightarm = new NameNode("right arm");
-        TransformNode rightArmTranslate = new TransformNode("rightarm translate",
-                                              Mat4Transform.translate(-(bodyWidth*0.5f)-(armScale*0.5f),bodyHeight,0));
-        rightArmRotate = new TransformNode("rightarm rotate",Mat4Transform.rotateAroundX(180));
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(armScale,armLength,armScale));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode rightArmScale = new TransformNode("rightarm scale", m);
-          ModelNode rightArmShape = new ModelNode("Cube(right arm)", cube2);
-
-      NameNode leftleg = new NameNode("left leg");
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate((bodyWidth*0.5f)-(legScale*0.5f),0,0));
-        m = Mat4.multiply(m, Mat4Transform.rotateAroundX(180));
-        m = Mat4.multiply(m, Mat4Transform.scale(legScale,legLength,legScale));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode leftlegTransform = new TransformNode("leftleg transform", m);
-          ModelNode leftLegShape = new ModelNode("Cube(leftleg)", cube);
-
-      NameNode rightleg = new NameNode("right leg");
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(-(bodyWidth*0.5f)+(legScale*0.5f),0,0));
-        m = Mat4.multiply(m, Mat4Transform.rotateAroundX(180));
-        m = Mat4.multiply(m, Mat4Transform.scale(legScale,legLength,legScale));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode rightlegTransform = new TransformNode("rightleg transform", m);
-          ModelNode rightLegShape = new ModelNode("Cube(rightleg)", cube);
-
-      robotRoot.addChild(robotMoveTranslate);
-        robotMoveTranslate.addChild(robotTranslate);
-          robotTranslate.addChild(body);
-            body.addChild(bodyTransform);
-              bodyTransform.addChild(bodyShape);
-            body.addChild(head);
-              head.addChild(headTransform);
-              headTransform.addChild(headShape);
-            body.addChild(leftarm);
-              leftarm.addChild(leftArmTranslate);
-              leftArmTranslate.addChild(leftArmRotate);
-              leftArmRotate.addChild(leftArmScale);
-              leftArmScale.addChild(leftArmShape);
-            body.addChild(rightarm);
-              rightarm.addChild(rightArmTranslate);
-              rightArmTranslate.addChild(rightArmRotate);
-              rightArmRotate.addChild(rightArmScale);
-              rightArmScale.addChild(rightArmShape);
-            body.addChild(leftleg);
-              leftleg.addChild(leftlegTransform);
-              leftlegTransform.addChild(leftLegShape);
-            body.addChild(rightleg);
-              rightleg.addChild(rightlegTransform);
-              rightlegTransform.addChild(rightLegShape);
-
-      robotRoot.update();  // IMPORTANT - don't forget this
-      //robotRoot.print(0, false);
-      //System.exit(0);
+    setLampRotations(1, 180f, -30.0f, 90f, -80f);
   }
  
   private void render(GL3 gl) {
@@ -386,7 +284,6 @@ public class Hatch_GLEventListener implements GLEventListener {
     lampOneRoot.draw(gl);
     anglePoiseLamp2.update_rotations(lampRotations[1]);
     lampTwoRoot.draw(gl);
-    robotRoot.draw(gl);
     table.update_egg(elapsedTime);
     tableRoot.draw(gl);
     // order matters draw transparent last

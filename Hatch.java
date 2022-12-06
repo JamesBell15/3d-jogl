@@ -6,6 +6,9 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
+/* I declare that this code is my own work */
+/* Author James Bell jbell15@sheffield.ac.uk */
+
 public class Hatch extends JFrame implements ActionListener {
   
   private static final int WIDTH = 1024;
@@ -106,7 +109,7 @@ public class Hatch extends JFrame implements ActionListener {
       glEventListener.setLampRotations(0, 0f, -10.0f, 10f, 20f);
     }
     else if (e.getActionCommand().equalsIgnoreCase("Lamp 1 pose 2")) {
-      glEventListener.setLampRotations(0, 0f, -60.0f, 130f, -70f);
+      glEventListener.setLampRotations(0, 0f, -60.0f, 130f, -90f);
     }
     else if (e.getActionCommand().equalsIgnoreCase("Lamp 1 pose 3")) {
       glEventListener.setLampRotations(0, -100f, -60.0f, 130f, -60f);
@@ -115,7 +118,7 @@ public class Hatch extends JFrame implements ActionListener {
       glEventListener.setLampRotations(1, 180f, -60.0f, 90f, 20f);
     }
     else if (e.getActionCommand().equalsIgnoreCase("Lamp 2 pose 2")) {
-      glEventListener.setLampRotations(1, 180f, -30.0f, 100f, -80f);
+      glEventListener.setLampRotations(1, 180f, -30.0f, 90f, -80f);
     }
     else if (e.getActionCommand().equalsIgnoreCase("Lamp 2 pose 3")) {
       glEventListener.setLampRotations(1,  90f, 30.0f, 40f, -20f);

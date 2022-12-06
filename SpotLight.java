@@ -3,6 +3,9 @@ import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 
+/* I declare that this code is my own work */
+/* Author James Bell jbell15@sheffield.ac.uk */
+
 public class SpotLight extends Light {
 
   private Vec3 direction;

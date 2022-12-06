@@ -8,6 +8,9 @@ import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
 
+/* I declare that this code is my own work */
+/* Author James Bell jbell15@sheffield.ac.uk */
+
 public class Scene {
   protected GL3 gl;
   protected Camera camera;

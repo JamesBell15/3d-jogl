@@ -4,6 +4,9 @@ import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.*;
 
+/* I declare that this code is my own work */
+/* Author James Bell jbell15@sheffield.ac.uk */
+
 public class SpotLightNode extends SGNode {
 
   protected SpotLight light;

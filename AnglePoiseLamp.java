@@ -8,9 +8,12 @@ import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
 
+/* I declare that this code is my own work */
+/* Author James Bell jbell15@sheffield.ac.uk */
+
 public class AnglePoiseLamp extends Scene {
 
-  private Texture lampTexture;
+  private Texture lampTexture, eyeTexture, growthTexture;
   private boolean typeOfLamp;
 
   public AnglePoiseLamp(GL3 gl,
@@ -19,6 +22,8 @@ public class AnglePoiseLamp extends Scene {
               GlobalLight[] globalLights,
               SpotLight[] spotLights,
               Texture lampTexture,
+              Texture eyeTexture,
+              Texture growthTexture,
               SpotLight spotlight,
               Vec3 baseTransformation,
               Vec3 scaleLamp,
@@ -30,6 +35,8 @@ public class AnglePoiseLamp extends Scene {
             ){
     super(gl, camera, lights, globalLights, spotLights);
     this.lampTexture = lampTexture;
+    this.eyeTexture = eyeTexture;
+    this.growthTexture = growthTexture;
     this.baseTransformation = baseTransformation;
     this.spotlight = spotlight;
     this.scaleLamp = scaleLamp;
@@ -55,6 +62,13 @@ public class AnglePoiseLamp extends Scene {
   // stem, ball scales
   private TransformNode[][] eyeScales = {new TransformNode[2], new TransformNode[2]};
   private ModelNode[][] eyeShapes = {new ModelNode[2], new ModelNode[2]};
+
+  private TransformNode[] growthTransforms = new TransformNode[2];
+  // stem rotations
+  private TransformNode[] growthRotations = new TransformNode[2];
+  // stem, ball scales
+  private TransformNode[] growthScales = new TransformNode[2];
+  private ModelNode[] growthShapes = new ModelNode[2];
 
   private Vec3 baseTransformation, scaleLamp;
   private float lowerArmRotationY, lowerArmRotationZ, jointRotationZ, headRotationZ;
@@ -139,6 +153,8 @@ public class AnglePoiseLamp extends Scene {
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
 
     sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, lampTexture);
+
+    float rotate = 0f;
 
     root = new NameNode("root");
 
@@ -250,48 +266,76 @@ public class AnglePoiseLamp extends Scene {
                                   spotLightTransform.addChild(spotLightScale);
                                     spotLightScale.addChild(spotLightShape);
 
+
+
+    sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, eyeTexture);
+
+    // ball left eye
+      transform = new Vec3(0f, 0.6f, 0f);
+      eyeTransforms[0][1] = new TransformNode("Transform left eye ball", Mat4Transform.translate(transform));
+
+      scale = new Vec3(0.25f, 0.25f, 0.25f);
+      eyeScales[0][1] = new TransformNode("Scale left eye ball", Mat4Transform.scale(scale));
+
+      eyeShapes[0][1] = new ModelNode("Sphere left eye ball", sphere);
+
+    // ball right eye
+      transform = new Vec3(0f, 0.6f, 0f);
+      eyeTransforms[1][1] = new TransformNode("Transform right eye ball", Mat4Transform.translate(transform));
+
+      scale = new Vec3(0.25f, 0.25f, 0.25f);
+      eyeScales[1][1] = new TransformNode("Scale right eye ball", Mat4Transform.scale(scale));
+
+      eyeShapes[1][1] = new ModelNode("Sphere right eye ball", sphere);
+
+    sphere = new Model(gl, camera, lights, globalLights, spotLights, shader, material, modelMatrix, mesh, growthTexture);
+
+    // stem left eye
+      transform = new Vec3(0f, 0.25f, 0f);
+      eyeTransforms[0][0] = new TransformNode("Transform left eye stem", Mat4Transform.translate(transform));
+
+      rotate = 30f;
+      eyeRotations[0] =  new TransformNode("Rotate X left eye stem", Mat4Transform.rotateAroundX(rotate));
+
+      scale = new Vec3(0.1f, 0.75f, 0.1f);
+      eyeScales[0][0] = new TransformNode("Scale left eye stem", Mat4Transform.scale(scale));
+
+      eyeShapes[0][0] = new ModelNode("Sphere left eye stem", sphere);
+
+    // stem right eye
+      transform = new Vec3(0f, 0.25f, 0f);
+      eyeTransforms[1][0] = new TransformNode("Transform right eye stem", Mat4Transform.translate(transform));
+
+      rotate = -30f;
+      eyeRotations[1] =  new TransformNode("Rotate X right eye stem", Mat4Transform.rotateAroundX(rotate));
+
+      scale = new Vec3(0.1f, 0.75f, 0.1f);
+      eyeScales[1][0] = new TransformNode("Scale right eye stem", Mat4Transform.scale(scale));
+
+      eyeShapes[1][0] = new ModelNode("Sphere right eye stem", sphere);
+
+    // first growth
+      rotate = -30f;
+      growthRotations[0] =  new TransformNode("Rotate Z left first growth", Mat4Transform.rotateAroundZ(rotate));
+
+      transform = new Vec3(0f, 0.5f, 0f);
+      growthTransforms[0] = new TransformNode("Transform left first growth", Mat4Transform.translate(transform));
+
+      scale = new Vec3(0.1f, 1f, 0.1f);
+      growthScales[0] = new TransformNode("Scale left first growth", Mat4Transform.scale(scale));
+
+      growthShapes[0] = new ModelNode("Sphere left first growth", sphere);
+
+    // second growth
+      growthRotations[1] =  new TransformNode("Rotate Z left second growth", Mat4Transform.rotateAroundZ(rotate));
+
+      growthTransforms[1] = new TransformNode("Transform left second growth", Mat4Transform.translate(transform));
+
+      growthScales[1] = new TransformNode("Scale left second growth", Mat4Transform.scale(scale));
+
+      growthShapes[1] = new ModelNode("Sphere left second growth", sphere);
+
     if (typeOfLamp) {
-
-      // stem left eye
-        transform = new Vec3(0f, 0.25f, 0f);
-        eyeTransforms[0][0] = new TransformNode("Transform left eye stem", Mat4Transform.translate(transform));
-
-        float rotate = 30f;
-        eyeRotations[0] =  new TransformNode("Rotate X left eye stem", Mat4Transform.rotateAroundX(rotate));
-
-        scale = new Vec3(0.1f, 0.75f, 0.1f);
-        eyeScales[0][0] = new TransformNode("Scale left eye stem", Mat4Transform.scale(scale));
-
-        eyeShapes[0][0] = new ModelNode("Sphere left eye stem", sphere);
-      // ball left eye
-        transform = new Vec3(0f, 0.5f, 0f);
-        eyeTransforms[0][1] = new TransformNode("Transform left eye ball", Mat4Transform.translate(transform));
-
-        scale = new Vec3(0.25f, 0.25f, 0.25f);
-        eyeScales[0][1] = new TransformNode("Scale left eye ball", Mat4Transform.scale(scale));
-
-        eyeShapes[0][1] = new ModelNode("Sphere left eye ball", sphere);
-
-      // stem right eye
-        transform = new Vec3(0f, 0.25f, 0f);
-        eyeTransforms[1][0] = new TransformNode("Transform right eye stem", Mat4Transform.translate(transform));
-
-        rotate = -30f;
-        eyeRotations[1] =  new TransformNode("Rotate X right eye stem", Mat4Transform.rotateAroundX(rotate));
-
-        scale = new Vec3(0.1f, 0.75f, 0.1f);
-        eyeScales[1][0] = new TransformNode("Scale right eye stem", Mat4Transform.scale(scale));
-
-        eyeShapes[1][0] = new ModelNode("Sphere right eye stem", sphere);
-      // ball right eye
-        transform = new Vec3(0f, 0.5f, 0f);
-        eyeTransforms[1][1] = new TransformNode("Transform right eye ball", Mat4Transform.translate(transform));
-
-        scale = new Vec3(0.25f, 0.25f, 0.25f);
-        eyeScales[1][1] = new TransformNode("Scale right eye ball", Mat4Transform.scale(scale));
-
-        eyeShapes[1][1] = new ModelNode("Sphere right eye ball", sphere);
-
       headRotateZ.addChild(eyeRotations[0]);
         eyeRotations[0].addChild(eyeTransforms[0][0]);
           eyeTransforms[0][0].addChild(eyeScales[0][0]);
@@ -308,8 +352,42 @@ public class AnglePoiseLamp extends Scene {
           eyeTransforms[1][1].addChild(eyeScales[1][1]);
             eyeScales[1][1].addChild(eyeShapes[1][1]);
 
-    } else {
+      jointRotateZ.addChild(growthRotations[0]);
+        growthRotations[0].addChild(growthTransforms[0]);
+          growthTransforms[0].addChild(growthScales[0]);
+            growthScales[0].addChild(growthShapes[0]);
 
+      headRotateZ.addChild(growthRotations[1]);
+        growthRotations[1].addChild(growthTransforms[1]);
+          growthTransforms[1].addChild(growthScales[1]);
+            growthScales[1].addChild(growthShapes[1]);
+
+    } else {
+      jointTransform.addChild(eyeRotations[0]);
+        eyeRotations[0].addChild(eyeTransforms[0][0]);
+          eyeTransforms[0][0].addChild(eyeScales[0][0]);
+            eyeScales[0][0].addChild(eyeShapes[0][0]);
+        eyeRotations[0].addChild(eyeTransforms[0][1]);
+          eyeTransforms[0][1].addChild(eyeScales[0][1]);
+            eyeScales[0][1].addChild(eyeShapes[0][1]);
+
+      jointTransform.addChild(eyeRotations[1]);
+        eyeRotations[1].addChild(eyeTransforms[1][0]);
+          eyeTransforms[1][0].addChild(eyeScales[1][0]);
+            eyeScales[1][0].addChild(eyeShapes[1][0]);
+        eyeRotations[1].addChild(eyeTransforms[1][1]);
+          eyeTransforms[1][1].addChild(eyeScales[1][1]);
+            eyeScales[1][1].addChild(eyeShapes[1][1]);
+
+      lowerArmTransform.addChild(growthRotations[0]);
+        growthRotations[0].addChild(growthTransforms[0]);
+          growthTransforms[0].addChild(growthScales[0]);
+            growthScales[0].addChild(growthShapes[0]);
+
+      upperArmTransform.addChild(growthRotations[1]);
+        growthRotations[1].addChild(growthTransforms[1]);
+          growthTransforms[1].addChild(growthScales[1]);
+            growthScales[1].addChild(growthShapes[1]);
     }
 
 
